@@ -35,10 +35,10 @@ export const StyledLink = styled(Link)`
 `
 
 export const Container = styled.div({
-	minHeight: '100vh',
-	minWidth: '100vw',
-	display: 'flex',
-	alignItems: 'center',
+	height: '100vh',
+	width: '100vw',
+	display: 'grid',
+	placeItems: 'center',
 	backgroundColor: '#534292',
 	backgroundImage: 'linear-gradient(to bottom,#654a86,#534292)',
 })

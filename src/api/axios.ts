@@ -9,7 +9,7 @@ import { IAuthResponse } from './types'
 const CancelToken = axiosInstance.CancelToken
 
 const axios = axiosInstance.create({
-	baseURL: import.meta.env.VITE_PUBLIC_BASE_URL,
+	baseURL: import.meta.env.VITE_PUBLIC_API_BASE_URL,
 	responseType: 'json',
 	withCredentials: true,
 })
@@ -31,9 +31,12 @@ const onRejectedResponse = async (
 ): Promise<AxiosError> => {
 	if (error.response?.status === 401) {
 		try {
-			const response: AxiosResponse = await axios.get('auth/refresh', {
-				withCredentials: true,
-			})
+			const response: AxiosResponse<IAuthResponse> = await axios.post(
+				'auth/refresh',
+				{
+					withCredentials: true,
+				}
+			)
 			updateCookie(response)
 			if (error.config) return axios.request(error.config)
 		} catch (e) {
@@ -53,8 +56,8 @@ const onFulfilledResponse = async (
 
 const updateCookie = (response: AxiosResponse<IAuthResponse>) => {
 	const data = response?.data
-	if ('access_token' in data) {
-		Cookies.set('accessToken', data.tokens.access_token)
+	if (data.tokens) {
+		Cookies.set('accessToken', data.tokens.accessToken)
 	}
 }
 

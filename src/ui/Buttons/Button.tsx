@@ -5,7 +5,7 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	text: string
 }
 
-const CustomButton = styled.button({
+export const CustomButton = styled.button({
 	padding: '10px',
 	width: '100%',
 	border: 'none',
@@ -17,6 +17,7 @@ const CustomButton = styled.button({
 	fontSize: '1.2em',
 	boxShadow: '0 0 1px 1px rgba(0,0,0,0.1)',
 	color: '#fff',
+	transition: '0.1s ease-in',
 	'&:hover': {
 		backgroundColor: '#8162a5',
 		backgroundImage:

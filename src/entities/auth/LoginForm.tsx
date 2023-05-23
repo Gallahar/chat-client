@@ -6,11 +6,14 @@ import { useLoginMutation } from './api'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { IAuthLogin } from 'shared/models/auth.interface'
-import { useAppSelector } from 'store'
+import { isAxiosError } from 'axios'
+import { IBaseApiErrorResponse } from 'api/types'
+import { emailRegexp } from 'shared/lib/constants/regexp'
+import { useNavigate } from 'react-router-dom'
 
 export const LoginForm = () => {
 	const [login, { isError, isSuccess, isLoading, error }] = useLoginMutation()
-	const user = useAppSelector((state) => state.userState.user)
+	const navigate = useNavigate()
 
 	const {
 		register,
@@ -24,11 +27,19 @@ export const LoginForm = () => {
 	useEffect(() => {
 		if (isSuccess) {
 			toast.success('Login successful')
-			console.log('navigated to chat window')
-			console.log(user?.email)
+			navigate('/')
 		}
 		if (isError) {
-			toast.error(error?.data?.message)
+			if (!isAxiosError(error)) {
+				const currentError = error as IBaseApiErrorResponse
+				if (Array.isArray(currentError.data.message)) {
+					currentError.data.message.forEach((message) =>
+						toast.error(message)
+					)
+				} else {
+					toast.error(currentError.data.message)
+				}
+			}
 		}
 	}, [isLoading])
 
@@ -44,16 +55,27 @@ export const LoginForm = () => {
 				<Input
 					{...register('email', {
 						required: 'this field is required',
+						pattern: {
+							value: emailRegexp,
+							message: 'email must be an email',
+						},
 					})}
-					label="email"
-					error={errors.email?.message}
+					placeholder="Email address"
+					label="Email address"
+					error={errors?.email?.message}
 				/>
 				<Input
 					{...register('password', {
 						required: 'this field is required',
+						minLength: {
+							value: 6,
+							message:
+								'Password cannot be less than 6 characters!',
+						},
 					})}
+					placeholder="Password"
 					label="Password"
-					error={errors.password?.message}
+					error={errors?.password?.message}
 				/>
 				<Button type="submit" text="Login" />
 			</CustomForm>

@@ -6,7 +6,6 @@ import { IAuthCreate, IAuthLogin } from 'shared/models/auth.interface'
 export const authApi = createApi({
 	reducerPath: 'authApi',
 	baseQuery: axiosBaseQuery(),
-	tagTypes: ['register', 'login'],
 	endpoints: (builder) => ({
 		register: builder.mutation<IAuthResponse, IAuthCreate>({
 			query: (dto) => ({

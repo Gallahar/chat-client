@@ -2,29 +2,37 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { Button } from 'ui/Buttons/Button'
 import { Input } from 'ui/Inputs/Input'
-import { emailRegexp, passwordRegexp } from 'shared/lib/regexp'
+import { emailRegexp, passwordRegexp } from 'shared/lib/constants/regexp'
 import { CustomForm, FormWrapper, Heading, StyledLink } from './ui'
 import { useRegisterMutation } from './api'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IAuthCreate } from 'shared/models/auth.interface'
-
+import { IBaseApiErrorResponse } from 'api/types'
+import { isAxiosError } from 'axios'
 
 export const RegisterForm = () => {
-	const [registerUser, { isSuccess, isLoading, isError }] =
+	const [registerUser, { isSuccess, isLoading, isError, error }] =
 		useRegisterMutation()
 	const navigate = useNavigate()
-
 
 	useEffect(() => {
 		if (isSuccess) {
 			toast.success('Registration is successful')
 			navigate('/login')
-			
 		}
 
 		if (isError) {
-			toast.error('Registration failed')
+			if (!isAxiosError(error)) {
+				const currentError = error as IBaseApiErrorResponse
+				if (Array.isArray(currentError.data.message)) {
+					currentError.data.message.forEach((message) =>
+						toast.error(message)
+					)
+				} else {
+					toast.error(currentError.data.message)
+				}
+			}
 		}
 	}, [isLoading])
 
@@ -66,7 +74,7 @@ export const RegisterForm = () => {
 						required: 'this field is required',
 						pattern: {
 							value: emailRegexp,
-							message: 'email should be correct format',
+							message: 'email must be an email',
 						},
 					})}
 					placeholder="Email address"
