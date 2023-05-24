@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
 export const SideBar = styled.aside`
 	padding-right: 5px;
@@ -8,15 +8,36 @@ export const SideBar = styled.aside`
 	gap: 10px;
 `
 
+const rotate = keyframes`
+    0%{
+		transform: rotate(0)
+	}
+
+	50%{
+		transform: rotate(90deg)
+	}
+
+    100%{
+        transform: rotate(180deg)
+    }
+`
+
 export const ActionMenu = styled.div`
 	padding: 20px;
 	width: 100%;
 	height: 100%;
 	display: grid;
 	place-items: center;
-	grid-template-columns: 1fr 1fr auto;
+	grid-template-columns: 1fr 1fr 1fr auto;
 	> h1 {
 		color: #fff;
+	}
+	> svg {
+		cursor: pointer;
+
+		&:hover {
+			animation: ${rotate} 1s linear infinite;
+		}
 	}
 `
 
@@ -31,4 +52,9 @@ export const AvatarWrapper = styled.div`
 	align-items: center;
 `
 
-
+export const ChangeAvatarContainer = styled.div`
+	width: 500px;
+	height: 500px;
+	display: grid;
+	align-content: space-between;
+`

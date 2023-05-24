@@ -1,31 +1,50 @@
-import { useSendMessageMutation } from 'entities/chat/api'
 import { useLocation } from 'react-router-dom'
+import avatarImg from 'assets/userAvatar.png'
 import styled from 'styled-components'
+import { useGetUserByIdQuery } from '../api'
+import { Avatar } from '../ui'
 import { Button } from 'ui/Buttons/Button'
 
 const ProfileWrapper = styled.section`
 	height: 100%;
 	display: grid;
-	grid-template-columns: 1fr;
-	background-color: #8c8e9c;
+
+	place-items: center;
+	background-image: linear-gradient(to left, #896cad, #493d74);
+
+	> button {
+		width: 50%;
+	}
+`
+const DataContainer = styled.div`
+	color: #ccc6c6;
+	display: grid;
+	gap: 20px;
+	justify-items: center;
 `
 
 export const Profile = () => {
 	const location = useLocation()
-	const [sendMessage, { data }] = useSendMessageMutation()
-
-	const onClickSend = async () => {
-		await sendMessage({
-			chatId: '1',
-			date: new Date(),
-			email: 'smoe@mail.ru',
-			text: 'connected',
-		})
-	}
+	const { data, isLoading } = useGetUserByIdQuery(
+		location.pathname.split('/')[2]
+	)
 
 	return (
 		<ProfileWrapper>
-			<Button text="Send Message" onClick={onClickSend} />
+			{data && (
+				<>
+					<DataContainer>
+						<Avatar
+							width={200}
+							height={200}
+							src={data.avatar || avatarImg}
+						/>
+						<h1>{data.username}</h1>
+						<h2>{data.email}</h2>
+					</DataContainer>
+					<Button text="send message" />
+				</>
+			)}
 		</ProfileWrapper>
 	)
 }

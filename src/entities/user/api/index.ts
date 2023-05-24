@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import axiosBaseQuery from 'api/axiosBaseQuery'
-import { IUser } from 'shared/models/user.interface'
+import { IUpdateAvatar, IUser } from 'shared/models/user.interface'
 
 type TFindUserInput = {
 	value: string
@@ -19,7 +19,6 @@ export const userApi = createApi({
 				method: 'GET',
 				headers: { ContentType: 'application/json' },
 			}),
-			
 		}),
 		getUserById: builder.query<IUser, string>({
 			query: (id) => ({
@@ -28,7 +27,15 @@ export const userApi = createApi({
 				headers: { ContentType: 'application/json' },
 			}),
 		}),
+		updateAvatar: builder.mutation<IUser, IUpdateAvatar>({
+			query: (avatarUrl) => ({
+				url: `/user/update-avatar`,
+				method: 'POST',
+				headers: { ContentType: 'application/json' },
+				data: avatarUrl,
+			}),
+		}),
 	}),
 })
 
-export const { useGetUserByIdQuery, useFindUserQuery } = userApi
+export const { useGetUserByIdQuery, useFindUserQuery,useUpdateAvatarMutation } = userApi

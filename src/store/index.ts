@@ -7,6 +7,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from './types'
 import { userApi } from 'entities/user/api'
 import { chatApi } from 'entities/chat/api'
+import { fileApi } from 'entities/file/api'
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 	configureStore({
@@ -14,13 +15,15 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 			[chatApi.reducerPath]: chatApi.reducer,
 			[authApi.reducerPath]: authApi.reducer,
 			[userApi.reducerPath]: userApi.reducer,
+			[fileApi.reducerPath]: fileApi.reducer,
 			userState: userSlice,
 		},
 		middleware: (getDefaultMiddleware) =>
 			getDefaultMiddleware({}).concat(
 				authApi.middleware,
 				userApi.middleware,
-				chatApi.middleware
+				chatApi.middleware,
+				fileApi.middleware
 			),
 		preloadedState,
 	})

@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { authApi } from 'entities/auth/api'
 import Cookies from 'js-cookie'
 import { getCookiesData } from 'shared/lib/utils/getCookiesData'
+import { userApi } from 'entities/user/api'
 
 export interface TUserState {
 	user: IUser | null
@@ -24,7 +25,14 @@ export const userSlice = createSlice({
 				state.user = payload.user
 				Cookies.set('user', JSON.stringify(payload.user))
 			}
-		)
+		),
+			builder.addMatcher(
+				userApi.endpoints.updateAvatar.matchFulfilled,
+				(state, { payload }) => {
+					state.user = payload
+					Cookies.set('user', JSON.stringify(payload))
+				}
+			)
 	},
 })
 

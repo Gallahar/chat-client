@@ -4,3 +4,7 @@ export interface IUser {
 	email: string
 	avatar: string
 }
+
+export interface IUpdateAvatar {
+	avatar: string
+}
