@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from './types'
 import { userApi } from 'entities/user/api'
 import { chatApi } from 'entities/chat/api'
 import { fileApi } from 'entities/file/api'
+import chatSlice from './slices/chatSlice'
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 	configureStore({
@@ -17,6 +18,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 			[userApi.reducerPath]: userApi.reducer,
 			[fileApi.reducerPath]: fileApi.reducer,
 			userState: userSlice,
+			chatState: chatSlice,
 		},
 		middleware: (getDefaultMiddleware) =>
 			getDefaultMiddleware({}).concat(

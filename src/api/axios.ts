@@ -29,7 +29,10 @@ axios.interceptors.request.use(
 const onRejectedResponse = async (
 	error: AxiosError<{ message: string }>
 ): Promise<AxiosError> => {
-	if (error.response?.status === 401) {
+	if (
+		error.response?.data.message === 'Access token validation failed' &&
+		error.response?.status === 401
+	) {
 		try {
 			const response: AxiosResponse<IAuthResponse> = await axios.post(
 				'auth/refresh',
@@ -40,6 +43,7 @@ const onRejectedResponse = async (
 			updateCookie(response)
 			if (error.config) return axios.request(error.config)
 		} catch (e) {
+			Cookies.remove('isAuth')
 			console.log(e)
 		}
 	}

@@ -1,11 +1,5 @@
 import { Button } from 'ui/Buttons/Button'
-import {
-	SideBar,
-	ActionMenu,
-	Avatar,
-	AvatarWrapper,
-	ChangeAvatarContainer,
-} from '../ui'
+import { SideBar, ActionMenu, Avatar, ChangeAvatarContainer } from '../ui'
 import avatarImg from 'assets/userAvatar.png'
 import { logout } from 'store/slices/userSlice'
 import { useAppDispatch, useAppSelector } from 'store'
@@ -18,21 +12,22 @@ import { PopUp } from 'ui/PopUp/PopUp'
 import { FileField } from 'entities/file/components/FileField'
 import { useUpdateAvatarMutation } from '../api'
 import { toast } from 'react-toastify'
+import { HomeIcon } from 'ui/icons/HomeIcon'
+import { Link } from 'react-router-dom'
 
 export const UserBar = () => {
-	const [updateAvatar, { isSuccess }] = useUpdateAvatarMutation()
-	const [path, setPath] = useState('')
-	const [isOpen, setIsOpen] = useState(false)
 	const user = useAppSelector(selectUser)
+	const [updateAvatar, { isSuccess }] = useUpdateAvatarMutation()
+	const [path, setPath] = useState(user.avatar)
+	const [isOpen, setIsOpen] = useState(false)
 	const dispatch = useAppDispatch()
 
 	const closePopUpHandler = () => {
-		setPath('')
+		setPath(user.avatar)
 		setIsOpen(false)
 	}
 
 	const handleSave = () => {
-		if (!path) return
 		updateAvatar({ avatar: path })
 	}
 
@@ -45,15 +40,16 @@ export const UserBar = () => {
 	return (
 		<SideBar>
 			<ActionMenu>
+				<Link to={''}>
+					<HomeIcon />
+				</Link>
 				<Setting onClick={() => setIsOpen(true)} />
 				<h1>{user?.username}</h1>
-				<AvatarWrapper>
-					<Avatar
-						width={50}
-						height={50}
-						src={user?.avatar || avatarImg}
-					/>
-				</AvatarWrapper>
+				<Avatar
+					width={50}
+					height={50}
+					src={user?.avatar || avatarImg}
+				/>
 				<Button onClick={() => dispatch(logout())} text={'logout'} />
 			</ActionMenu>
 			<SearchSection />

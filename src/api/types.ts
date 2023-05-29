@@ -1,3 +1,4 @@
+import { IChat } from 'shared/models/chat.interface'
 import { IUser } from 'shared/models/user.interface'
 
 export type ITokensResponse = {
@@ -23,4 +24,5 @@ export interface IBaseApiErrorResponse {
 export interface IAuthResponse {
 	tokens: ITokensResponse
 	user: IUser
+	chats: IChat[]
 }

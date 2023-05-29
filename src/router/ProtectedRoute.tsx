@@ -1,21 +1,21 @@
 import { ReactNode, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from 'store'
-import { selectUser } from 'store/selectors'
+import { selectUserAuth } from 'store/selectors'
 
 interface ProtectedRouteProps {
 	children: ReactNode
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-	const currentUser = useAppSelector(selectUser)
+	const Authenticated = useAppSelector(selectUserAuth)
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (!currentUser) {
+		if (!Authenticated) {
 			navigate('/login', { replace: true })
 		}
-	}, [currentUser, navigate])
+	}, [Authenticated, navigate])
 
 	return <div>{children}</div>
 }

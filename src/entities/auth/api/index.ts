@@ -23,7 +23,15 @@ export const authApi = createApi({
 				data: dto,
 			}),
 		}),
+		refresh: builder.mutation<IAuthResponse, void>({
+			query: () => ({
+				url: '/auth/refresh',
+				method: 'POST',
+				headers: { ContentType: 'application/json' },
+			}),
+		}),
 	}),
 })
 
-export const { useRegisterMutation, useLoginMutation } = authApi
+export const { useRegisterMutation, useLoginMutation, useRefreshMutation } =
+	authApi

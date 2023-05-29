@@ -19,7 +19,7 @@ export const RegisterForm = () => {
 	useEffect(() => {
 		if (isSuccess) {
 			toast.success('Registration is successful')
-			navigate('/login')
+			navigate('/chats')
 		}
 
 		if (isError) {

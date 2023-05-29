@@ -6,6 +6,7 @@ export const SideBar = styled.aside`
 	display: grid;
 	grid-template-rows: max-content 1fr;
 	gap: 10px;
+	overflow: auto;
 `
 
 const rotate = keyframes`
@@ -23,12 +24,13 @@ const rotate = keyframes`
 `
 
 export const ActionMenu = styled.div`
-	padding: 20px;
+	padding: 20px 10px;
 	width: 100%;
 	height: 100%;
 	display: grid;
-	place-items: center;
-	grid-template-columns: 1fr 1fr 1fr auto;
+	justify-content: space-between;
+	align-items: center;
+	grid-template-columns: repeat(5,max-content);
 	> h1 {
 		color: #fff;
 	}
@@ -44,12 +46,6 @@ export const ActionMenu = styled.div`
 export const Avatar = styled.img`
 	border-radius: 50%;
 	border: 1px solid #2f3248;
-`
-
-export const AvatarWrapper = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 `
 
 export const ChangeAvatarContainer = styled.div`

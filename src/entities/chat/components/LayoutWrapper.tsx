@@ -7,6 +7,6 @@ interface IChatContainerProps {
 
 
 
-export const ChatWrapper = ({children}:IChatContainerProps) => {
+export const LayoutWrapper = ({children}:IChatContainerProps) => {
   return <Container>{children}</Container>
 }

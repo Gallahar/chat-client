@@ -1,10 +1,12 @@
 import { AuthLayout } from 'entities/auth/AuthLayout'
-import { ChatLayout } from 'entities/chat/ChatLayout'
+import { ChatLayout } from 'entities/chat/components/ChatLayout'
 import { Login } from 'pages/Login'
 import { ProfilePage } from 'pages/ProfilePage'
 import { Register } from 'pages/Register'
 import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
+import { ChatPage } from 'pages/ChatPage'
+import { Chats } from 'pages/Chats'
 
 export const router = createBrowserRouter([
 	{
@@ -20,7 +22,11 @@ export const router = createBrowserRouter([
 				<ChatLayout />
 			</ProtectedRoute>
 		),
-		path: '/',
-		children: [{ path: 'profile/:id', element: <ProfilePage /> }],
+		path: '/chats',
+		children: [
+			{ path: '', element: <Chats /> },
+			{ path: ':id', element: <ChatPage /> },
+			{ path: 'profile/:id', element: <ProfilePage /> },
+		],
 	},
 ])

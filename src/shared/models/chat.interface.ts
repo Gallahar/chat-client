@@ -1,15 +1,25 @@
-export interface IMessage {
-	chatId: string
-	email: string
-	text: string
-	date: Date
-}
-
+import { IMessage } from './message.interface'
+import { IUser } from './user.interface'
 
 export const enum ChatEvent {
-    CreateMessage = 'create-message',
-	SendMessage = 'send_message',
-	RequestAllMessages = 'request_all_messages',
-	SendAllMessages = 'send_all_messages',
-	ReceiveMessage = 'receive_message',
+	ChatConnect = 'chat/connect',
+	ChatStart = 'chat/start',
+	ChatReceiveNew = 'chat/receive_new',
+}
+
+export interface IConnection {
+	userId: string
+}
+
+export interface StartChat {
+	fromUserId: string
+	toUserId: string
+}
+
+export interface IChat {
+	users: IUser[]
+	messages: IMessage[]
+	_id: string
+	createdAt: string
+	updatedAt: string
 }

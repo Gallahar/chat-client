@@ -10,6 +10,7 @@ type TFindUserInput = {
 export const userApi = createApi({
 	reducerPath: 'userApi',
 	baseQuery: axiosBaseQuery(),
+	tagTypes: ['Avatar', 'Users'],
 	endpoints: (builder) => ({
 		findUser: builder.query<IUser[], TFindUserInput>({
 			query: ({ value, type }) => ({
@@ -19,6 +20,7 @@ export const userApi = createApi({
 				method: 'GET',
 				headers: { ContentType: 'application/json' },
 			}),
+			providesTags: ['Users'],
 		}),
 		getUserById: builder.query<IUser, string>({
 			query: (id) => ({
@@ -26,16 +28,22 @@ export const userApi = createApi({
 				method: 'GET',
 				headers: { ContentType: 'application/json' },
 			}),
+			providesTags: ['Users'],
 		}),
-		updateAvatar: builder.mutation<IUser, IUpdateAvatar>({
+		updateAvatar: builder.mutation<Pick<IUser, 'avatar'>, IUpdateAvatar>({
 			query: (avatarUrl) => ({
 				url: `/user/update-avatar`,
 				method: 'POST',
 				headers: { ContentType: 'application/json' },
 				data: avatarUrl,
 			}),
+			invalidatesTags: ['Avatar'],
 		}),
 	}),
 })
 
-export const { useGetUserByIdQuery, useFindUserQuery,useUpdateAvatarMutation } = userApi
+export const {
+	useGetUserByIdQuery,
+	useFindUserQuery,
+	useUpdateAvatarMutation,
+} = userApi

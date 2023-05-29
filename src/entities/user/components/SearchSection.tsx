@@ -6,7 +6,6 @@ import { Button } from 'ui/Buttons/Button'
 import { UserCard } from './UserCard'
 import styled from 'styled-components'
 
-
 const SectionWrapper = styled.section`
 	display: grid;
 	grid-template-rows: max-content max-content;
@@ -36,10 +35,6 @@ const UsersContainer = styled.div`
 	gap: 20px;
 `
 
-
-
-
-
 export const SearchSection = () => {
 	const [type, setType] = useState(false)
 	const [search, setSearch] = useState('')
@@ -53,7 +48,6 @@ export const SearchSection = () => {
 	const onClickType = () => {
 		setType(!type)
 	}
-
 
 	return (
 		<SectionWrapper>

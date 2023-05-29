@@ -2,6 +2,7 @@ import { CSSProperties, ChangeEvent, FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useDeleteFileMutation, useUploadFileMutation } from '../api'
 import { Close } from 'ui/icons/Close'
+import avatarImg from 'assets/userAvatar.png'
 
 interface IFileField {
 	folder: string
@@ -67,7 +68,7 @@ export const FileField: FC<IFileField> = ({
 		await uploadFile({ file, folder })
 	}
 
-	const handleDelete = async () => {
+	const handleDelete = () => {
 		deleteFile(path)
 	}
 
@@ -92,7 +93,7 @@ export const FileField: FC<IFileField> = ({
 				<FileInput key={key} type="file" onChange={onChangeInput} />
 			</label>
 
-			{path && <img src={path} />}
+			<img src={path || avatarImg} />
 			{path && <Close onClick={handleDelete} />}
 		</FieldContainer>
 	)

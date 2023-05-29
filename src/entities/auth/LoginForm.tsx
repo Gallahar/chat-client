@@ -27,7 +27,7 @@ export const LoginForm = () => {
 	useEffect(() => {
 		if (isSuccess) {
 			toast.success('Login successful')
-			navigate('/')
+			navigate('/chats')
 		}
 		if (isError) {
 			if (!isAxiosError(error)) {
@@ -43,9 +43,9 @@ export const LoginForm = () => {
 		}
 	}, [isLoading])
 
-	const submitHandler: SubmitHandler<IAuthLogin> = async (dto, e) => {
+	const submitHandler: SubmitHandler<IAuthLogin> = (dto, e) => {
 		e?.preventDefault()
-		await login(dto)
+		login(dto)
 	}
 
 	return (
