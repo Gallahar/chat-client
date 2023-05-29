@@ -76,7 +76,11 @@ export const ChatRoom = () => {
 			</ChatRoomHeader>
 			<ChatRoomMessages>
 				{chat?.messages.map((message: IMessage) => (
-					<MessageCard users={chat.users} message={message} />
+					<MessageCard
+						key={message._id}
+						users={chat.users}
+						message={message}
+					/>
 				))}
 			</ChatRoomMessages>
 			<ChatRoomInputSection>

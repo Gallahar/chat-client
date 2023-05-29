@@ -1,14 +1,26 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
-import { IChat, IConnection, StartChat } from 'shared/models/chat.interface'
+import {
+	IChat,
+	IConnectionDto,
+	IDeleteChatDto,
+	IStartChatDto,
+} from 'shared/models/chat.interface'
 import { Socket, io } from 'socket.io-client'
 import { ChatEvent } from 'shared/models/chat.interface'
 import axiosBaseQuery from 'api/axiosBaseQuery'
 import {
 	ICreateMessage,
+	IDeleteMessageResponse,
 	IMessage,
 	MessageEvent,
 } from 'shared/models/message.interface'
-import { addNewChat, addNewMessage } from 'store/slices/chatSlice'
+import {
+	addNewChat,
+	addNewMessage,
+	deleteChatById,
+	deleteMessageById,
+} from 'store/slices/chatSlice'
+
 let socket: Socket
 export function getSocket() {
 	if (!socket) {
@@ -23,6 +35,82 @@ export const chatApi = createApi({
 	reducerPath: 'chatApi',
 	baseQuery: axiosBaseQuery(),
 	endpoints: (builder) => ({
+		createConnection: builder.query<void, IConnectionDto>({
+			query: () => ({ data: [] }),
+			async onCacheEntryAdded(
+				id,
+				{ cacheEntryRemoved, dispatch, cacheDataLoaded }
+			) {
+				try {
+					await cacheDataLoaded
+
+					const socket = getSocket()
+					socket.emit(ChatEvent.ChatConnect, id, () => {
+						console.log('connected')
+					})
+
+					socket.on(ChatEvent.ChatReceiveNew, (chat: IChat) => {
+						dispatch(addNewChat(chat))
+					})
+
+					socket.on(
+						ChatEvent.ChatReceiveDelete,
+						(chatId: IDeleteChatDto) => {
+							dispatch(deleteChatById(chatId))
+						}
+					)
+
+					socket.on(MessageEvent.ReceiveNew, (message: IMessage) => {
+						dispatch(addNewMessage(message))
+					})
+
+					socket.on(
+						MessageEvent.ReceiveDelete,
+						(data: IDeleteMessageResponse) => {
+							dispatch(deleteMessageById(data.messageId))
+						}
+					)
+
+					await cacheEntryRemoved
+					console.log('i was removed')
+					socket.off(ChatEvent.ChatReceiveNew)
+					socket.off(ChatEvent.ChatReceiveDelete)
+					socket.off(MessageEvent.ReceiveNew)
+					socket.off(MessageEvent.ReceiveDelete)
+				} catch (error) {
+					console.log(error)
+				}
+			},
+		}),
+		startChat: builder.mutation<void, IStartChatDto>({
+			query: () => ({ data: [] }),
+			async onCacheEntryAdded(startChatDtoDto, { dispatch }) {
+				try {
+					const socket = getSocket()
+					socket.emit(
+						ChatEvent.ChatStart,
+						startChatDtoDto,
+						(chat: IChat) => {
+							dispatch(addNewChat(chat))
+						}
+					)
+				} catch (error) {
+					console.log(error)
+				}
+			},
+		}),
+		deleteChat: builder.mutation<void, IDeleteChatDto>({
+			query: () => ({ data: [] }),
+			async onCacheEntryAdded(chatId, { dispatch }) {
+				try {
+					const socket = getSocket()
+					socket.emit(ChatEvent.ChatDelete, chatId)
+					dispatch(deleteChatById(chatId))
+				} catch (error) {
+					console.log(error)
+				}
+			},
+		}),
 		sendMessage: builder.mutation<void, ICreateMessage>({
 			query: () => ({ data: [] }),
 			async onCacheEntryAdded(message, { dispatch }) {
@@ -40,42 +128,13 @@ export const chatApi = createApi({
 				}
 			},
 		}),
-		createConnection: builder.query<void, IConnection>({
+		deleteMessage: builder.mutation<void, { messageId: string }>({
 			query: () => ({ data: [] }),
-			async onCacheEntryAdded(id, { cacheEntryRemoved, dispatch }) {
+			async onCacheEntryAdded(messageDto, { dispatch }) {
 				try {
 					const socket = getSocket()
-					socket.emit(ChatEvent.ChatConnect, id, () => {
-						console.log('connected')
-					})
-					socket.on(ChatEvent.ChatReceiveNew, (chat: IChat) => {
-						dispatch(addNewChat(chat))
-					})
-					socket.on(MessageEvent.ReceiveNew, (message: IMessage) => {
-						dispatch(addNewMessage(message))
-					})
-
-					await cacheEntryRemoved
-
-					socket.off(ChatEvent.ChatReceiveNew)
-					socket.off(MessageEvent.ReceiveNew)
-				} catch (error) {
-					console.log(error)
-				}
-			},
-		}),
-		startChat: builder.mutation<void, StartChat>({
-			query: () => ({ data: [] }),
-			async onCacheEntryAdded(startChatDto, { dispatch }) {
-				try {
-					const socket = getSocket()
-					socket.emit(
-						ChatEvent.ChatStart,
-						startChatDto,
-						(chat: IChat) => {
-							dispatch(addNewChat(chat))
-						}
-					)
+					socket.emit(MessageEvent.DeleteMessage, messageDto)
+					dispatch(deleteMessageById(messageDto.messageId))
 				} catch (error) {
 					console.log(error)
 				}
@@ -88,4 +147,6 @@ export const {
 	useSendMessageMutation,
 	useCreateConnectionQuery,
 	useStartChatMutation,
+	useDeleteChatMutation,
+	useDeleteMessageMutation,
 } = chatApi

@@ -11,7 +11,10 @@ import { useEffect } from 'react'
 export const ChatLayout = () => {
 	const [refresh] = useRefreshMutation()
 	const user = useAppSelector(selectUser)
-	const { data } = useCreateConnectionQuery({ userId: user._id })
+	useCreateConnectionQuery(
+		{ userId: user._id },
+		{ refetchOnMountOrArgChange: true }
+	)
 
 	useEffect(() => {
 		refresh()

@@ -9,7 +9,7 @@ const ChatsWrapper = styled(ChatContentWrapper)`
 	max-height: 800px;
 	padding: 20px;
 	display: grid;
-	grid-template-columns: 1fr;
+	grid-template-columns: 100%;
 	grid-auto-rows: 200px;
 	gap: 20px;
 `

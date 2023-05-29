@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { authApi } from 'entities/auth/api'
 import Cookies from 'js-cookie'
 import { getCookiesData } from 'shared/lib/utils/getCookiesData'
-import { IChat } from 'shared/models/chat.interface'
+import { IChat, IDeleteChatDto } from 'shared/models/chat.interface'
 import { IMessage } from 'shared/models/message.interface'
 
 export interface IChatState {
@@ -15,11 +15,28 @@ const chatSlice = createSlice({
 	reducers: {
 		addNewChat: (state, action: PayloadAction<IChat>) => {
 			state.chats.push(action.payload)
+			console.log(action.payload)
+			Cookies.set('chats', JSON.stringify(state.chats))
+		},
+		deleteChatById: (state, action: PayloadAction<IDeleteChatDto>) => {
+			const filteredChats = state.chats.filter(
+				(chat) => chat._id !== action.payload.chatId
+			)
+			console.log(action.payload)
+			state.chats = filteredChats
+			Cookies.set('chats', JSON.stringify(filteredChats))
 		},
 		addNewMessage: (state, action: PayloadAction<IMessage>) => {
 			state.chats
 				.find((chat) => chat._id === action.payload.chatId)
 				?.messages.push(action.payload)
+		},
+		deleteMessageById: (state, action: PayloadAction<string>) => {
+			state.chats.find((chat) =>
+				chat.messages.forEach((message, i, arr) =>
+					message._id === action.payload ? arr.splice(i, 1) : message
+				)
+			)
 		},
 	},
 	extraReducers: (builder) => {
@@ -51,4 +68,5 @@ const chatSlice = createSlice({
 
 export default chatSlice.reducer
 
-export const { addNewChat, addNewMessage } = chatSlice.actions
+export const { addNewChat, addNewMessage, deleteChatById, deleteMessageById } =
+	chatSlice.actions

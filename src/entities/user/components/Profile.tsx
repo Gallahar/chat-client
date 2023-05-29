@@ -8,6 +8,7 @@ import { useAppSelector } from 'store'
 import { selectChats, selectUser } from 'store/selectors'
 import { useIdLocation } from 'shared/hooks/useIdLocation'
 import { useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
 
 const ProfileWrapper = styled.section`
 	height: 100%;
@@ -31,17 +32,27 @@ const DataContainer = styled.div`
 export const Profile = () => {
 	const user = useAppSelector(selectUser)
 	const navigate = useNavigate()
-	const lastChatId = useAppSelector(selectChats)
+	const chats = useAppSelector(selectChats)
 	const id = useIdLocation()
 	const { data, isLoading } = useGetUserByIdQuery(id)
 	const [startChat] = useStartChatMutation()
 
+	const duplicatedChat = useMemo(
+		() => chats.find((chat) => chat.users.some(({ _id }) => _id === id)),
+		[chats]
+	)
+
 	const startChatEvent = async () => {
+		if (duplicatedChat) {
+			navigate(`/chats/${duplicatedChat._id}`)
+			return
+		}
 		await startChat({
 			fromUserId: user._id,
 			toUserId: id,
 		})
-		navigate(`/chats/${lastChatId[lastChatId.length - 1]._id}`)
+
+		navigate('/chats')
 	}
 
 	return (

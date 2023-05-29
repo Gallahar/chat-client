@@ -39,7 +39,10 @@ export const SearchSection = () => {
 	const [type, setType] = useState(false)
 	const [search, setSearch] = useState('')
 	const value = useDebounce(search, 400)
-	const { data, isLoading } = useFindUserQuery({ value, type })
+	const { data, isLoading } = useFindUserQuery(
+		{ value, type },
+		{ refetchOnMountOrArgChange: true }
+	)
 
 	const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearch(e.target.value)
