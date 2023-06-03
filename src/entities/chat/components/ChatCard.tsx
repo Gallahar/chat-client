@@ -3,10 +3,10 @@ import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { getDate } from 'shared/lib/utils/getDate'
 import { IChat } from 'shared/models/chat.interface'
-import { useAppSelector } from 'store'
+import { useAppDispatch, useAppSelector } from 'store'
 import { selectUser } from 'store/selectors'
+import { deleteChatById } from 'store/slices/chatSlice'
 import styled from 'styled-components'
-import { useDeleteChatMutation } from '../api'
 import { Close } from 'ui/icons/Close'
 
 export const CloseButton = styled.button<{ position?: boolean }>`
@@ -62,6 +62,7 @@ interface IChatCardProps {
 
 export const ChatCard: FC<IChatCardProps> = ({ chat }) => {
 	const currentUser = useAppSelector(selectUser)
+	const dispatch = useAppDispatch()
 	const { users, _id, updatedAt, messages } = chat
 	const friend = users.find((user) => user.avatar !== currentUser.avatar)
 	const lastMessage = messages[messages.length - 1]
@@ -69,11 +70,11 @@ export const ChatCard: FC<IChatCardProps> = ({ chat }) => {
 		friend?._id !== lastMessage?.user ? 'You:' : ''
 	} ${lastMessage?.text}`
 
-	const [deleteChat] = useDeleteChatMutation()
+	
 
-	const handleDelete = async () => {
+	const handleDelete =  () => {
 		if (window.confirm('do you really want delete this chat?')) {
-			await deleteChat({ chatId: _id })
+			dispatch(deleteChatById({ chatId: _id }))
 		}
 	}
 

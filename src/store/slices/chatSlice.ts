@@ -2,21 +2,40 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { authApi } from 'entities/auth/api'
 import Cookies from 'js-cookie'
 import { getCookiesData } from 'shared/lib/utils/getCookiesData'
-import { IChat, IDeleteChatDto } from 'shared/models/chat.interface'
-import { IMessage } from 'shared/models/message.interface'
+import {
+	IChat,
+	IConnectionDto,
+	IDeleteChatDto,
+	IStartChatDto,
+} from 'shared/models/chat.interface'
+import {
+	ICreateMessage,
+	IDeleteMessageResponse,
+	IMessage,
+} from 'shared/models/message.interface'
 
 export interface IChatState {
 	chats: IChat[]
+	isConnected: boolean
 }
 
 const chatSlice = createSlice({
 	name: 'chat',
-	initialState: { chats: getCookiesData('chats') ?? [] } as IChatState,
+	initialState: {
+		chats: getCookiesData('chats') ?? [],
+		isConnected: false,
+	} as IChatState,
 	reducers: {
-		addNewChat: (state, action: PayloadAction<IChat>) => {
+		chatConnect: (state, action: PayloadAction<IConnectionDto>) => {
+			state.isConnected = true
+		},
+
+		receiveNewChat: (state, action: PayloadAction<IChat>) => {
 			state.chats.push(action.payload)
-			console.log(action.payload)
 			Cookies.set('chats', JSON.stringify(state.chats))
+		},
+		startNewChat: (state, action: PayloadAction<IStartChatDto>) => {
+			state.isConnected = true
 		},
 		deleteChatById: (state, action: PayloadAction<IDeleteChatDto>) => {
 			const filteredChats = state.chats.filter(
@@ -26,15 +45,46 @@ const chatSlice = createSlice({
 			state.chats = filteredChats
 			Cookies.set('chats', JSON.stringify(filteredChats))
 		},
-		addNewMessage: (state, action: PayloadAction<IMessage>) => {
+		receiveDeleteChatById: (
+			state,
+			action: PayloadAction<IDeleteChatDto>
+		) => {
+			const filteredChats = state.chats.filter(
+				(chat) => chat._id !== action.payload.chatId
+			)
+			console.log(action.payload)
+			state.chats = filteredChats
+			Cookies.set('chats', JSON.stringify(filteredChats))
+		},
+		receiveNewMessage: (state, action: PayloadAction<IMessage>) => {
 			state.chats
 				.find((chat) => chat._id === action.payload.chatId)
 				?.messages.push(action.payload)
 		},
-		deleteMessageById: (state, action: PayloadAction<string>) => {
+		sendNewMessage: (state, action: PayloadAction<ICreateMessage>) => {
+			state.isConnected = true
+		},
+		deleteMessageById: (
+			state,
+			action: PayloadAction<{ messageId: string }>
+		) => {
 			state.chats.find((chat) =>
 				chat.messages.forEach((message, i, arr) =>
-					message._id === action.payload ? arr.splice(i, 1) : message
+					message._id === action.payload.messageId
+						? arr.splice(i, 1)
+						: message
+				)
+			)
+		},
+		receiveDeleteMessageById: (
+			state,
+			action: PayloadAction<IDeleteMessageResponse>
+		) => {
+			state.chats.find((chat) =>
+				chat.messages.forEach((message, i, arr) =>
+					message._id === action.payload.messageId
+						? arr.splice(i, 1)
+						: message
 				)
 			)
 		},
@@ -68,5 +118,14 @@ const chatSlice = createSlice({
 
 export default chatSlice.reducer
 
-export const { addNewChat, addNewMessage, deleteChatById, deleteMessageById } =
-	chatSlice.actions
+export const {
+	chatConnect,
+	startNewChat,
+	receiveNewChat,
+	deleteChatById,
+	receiveDeleteChatById,
+	sendNewMessage,
+	receiveNewMessage,
+	deleteMessageById,
+	receiveDeleteMessageById,
+} = chatSlice.actions

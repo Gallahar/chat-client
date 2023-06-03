@@ -3,12 +3,12 @@ import styled from 'styled-components'
 import { useGetUserByIdQuery } from '../api'
 import { Avatar } from '../ui'
 import { Button } from 'ui/Buttons/Button'
-import { useStartChatMutation } from 'entities/chat/api'
-import { useAppSelector } from 'store'
+import { useAppDispatch, useAppSelector } from 'store'
 import { selectChats, selectUser } from 'store/selectors'
 import { useIdLocation } from 'shared/hooks/useIdLocation'
 import { useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { startNewChat } from 'store/slices/chatSlice'
 
 const ProfileWrapper = styled.section`
 	height: 100%;
@@ -35,22 +35,25 @@ export const Profile = () => {
 	const chats = useAppSelector(selectChats)
 	const id = useIdLocation()
 	const { data, isLoading } = useGetUserByIdQuery(id)
-	const [startChat] = useStartChatMutation()
+	const dispatch = useAppDispatch()
 
 	const duplicatedChat = useMemo(
 		() => chats.find((chat) => chat.users.some(({ _id }) => _id === id)),
-		[chats]
+		[chats, id]
 	)
 
-	const startChatEvent = async () => {
+	const startChatEvent = () => {
 		if (duplicatedChat) {
 			navigate(`/chats/${duplicatedChat._id}`)
 			return
 		}
-		await startChat({
-			fromUserId: user._id,
-			toUserId: id,
-		})
+
+		dispatch(
+			startNewChat({
+				fromUserId: user._id,
+				toUserId: id,
+			})
+		)
 
 		navigate('/chats')
 	}

@@ -6,14 +6,13 @@ import userSlice from './slices/userSlice'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from './types'
 import { userApi } from 'entities/user/api'
-import { chatApi } from 'entities/chat/api'
 import { fileApi } from 'entities/file/api'
 import chatSlice from './slices/chatSlice'
+import chatMiddleware from './middlewares/chatMiddleware'
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 	configureStore({
 		reducer: {
-			[chatApi.reducerPath]: chatApi.reducer,
 			[authApi.reducerPath]: authApi.reducer,
 			[userApi.reducerPath]: userApi.reducer,
 			[fileApi.reducerPath]: fileApi.reducer,
@@ -24,8 +23,8 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 			getDefaultMiddleware({}).concat(
 				authApi.middleware,
 				userApi.middleware,
-				chatApi.middleware,
-				fileApi.middleware
+				fileApi.middleware,
+				chatMiddleware
 			),
 		preloadedState,
 	})

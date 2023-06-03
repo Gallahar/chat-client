@@ -1,13 +1,13 @@
 import styled from 'styled-components'
 import { ChatContentWrapper } from '../ui'
-import { useAppSelector } from 'store'
+import { useAppDispatch, useAppSelector } from 'store'
 import { selectCurrentChat, selectUser } from 'store/selectors'
 import { useIdLocation } from 'shared/hooks/useIdLocation'
 import { MessageCard } from './MessageCard'
 import { Button } from 'ui/Buttons/Button'
 import { useState } from 'react'
-import { useSendMessageMutation } from '../api'
 import { IMessage } from 'shared/models/message.interface'
+import { sendNewMessage } from 'store/slices/chatSlice'
 
 const ChatRoomBody = styled(ChatContentWrapper)`
 	display: grid;
@@ -50,18 +50,21 @@ const ChatRoomInputSection = styled.div`
 `
 
 export const ChatRoom = () => {
-	const [sendMessage] = useSendMessageMutation()
+	const dispatch = useAppDispatch()
 	const user = useAppSelector(selectUser)
 	const chatId = useIdLocation()
 	const chat = useAppSelector((state) => selectCurrentChat(state, chatId))
 	const [message, setMessage] = useState('')
 
 	const onClickSandMessage = () => {
-		sendMessage({
-			chatId,
-			user: user._id,
-			text: message,
-		})
+		if (!message) return
+		dispatch(
+			sendNewMessage({
+				chatId,
+				user: user._id,
+				text: message,
+			})
+		)
 		setMessage('')
 	}
 

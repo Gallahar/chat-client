@@ -1,12 +1,12 @@
 import { FC, memo } from 'react'
 import { IMessage } from 'shared/models/message.interface'
 import { IUser } from 'shared/models/user.interface'
-import { useAppSelector } from 'store'
+import { useAppDispatch, useAppSelector } from 'store'
 import { selectUser } from 'store/selectors'
 import styled from 'styled-components'
 import { Close } from 'ui/icons/Close'
 import { CloseButton } from './ChatCard'
-import { useDeleteMessageMutation } from '../api'
+import { deleteMessageById } from 'store/slices/chatSlice'
 
 interface IMessageCardProps {
 	message: IMessage
@@ -25,13 +25,12 @@ const MessageCardWrapper = styled.div<{ friend: boolean }>`
 `
 
 export const MessageCard: FC<IMessageCardProps> = memo(({ message, users }) => {
+	const dispatch = useAppDispatch()
 	const currentUserId = useAppSelector(selectUser)._id
 	const { text, user, _id } = message
 
-	const [deleteMessage] = useDeleteMessageMutation()
-
-	const handleDelete = async () => {	
-		await deleteMessage({ messageId: _id })
+	const handleDelete = () => {
+		dispatch(deleteMessageById({ messageId: _id }))
 	}
 
 	return (
